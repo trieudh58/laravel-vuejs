@@ -6,7 +6,7 @@
         <div class="col-md-6 col-md-offset-3">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form method="post" action="{{ url('/todos/create') }}">
+                    <form id="create-form" method="post" action="{{ url('/todos/create') }}">
                         {{ csrf_field() }}
                         <div class="form-group">
                             <label for="todo-name">Name</label>
@@ -52,22 +52,30 @@
             ready: function () {
                 $.getJSON('/todos/get', function (todos) {
                     this.todos = todos;
-//                    console.log(todos);
                 }.bind(this));
+                // Send ajax request to get data from server periodically 20 seconds
+                // Run
+                setInterval(() => {this.getList()}, 10000);
+                // Not run
+                setInterval(this.getList(), 20000);
             },
             watch : {
                 returnedTodo: function (val) {
                    this.todos.unshift(JSON.parse(val));
-//                   console.log(val);
-//                   console.log(this.todos);
                 },
                 todos: function (val) {
                     console.log(val);
-//                    this.todos = JSON.parse(val);
                 }
             },
             methods: {
                 save: function () {
+                    // Clear old input from form
+                    $(':input', '#create-form').not(':button, :submit, :reset, :hidden')
+                        .val('')
+                            .removeAttr('checked')
+                            .removeAttr('selected');
+
+                    // Ajax request to create new todo
                     $.ajax({
                         url: '/todos/create',
                         type: 'post',
@@ -78,9 +86,14 @@
                         },
                         success: function (returnedTodo) {
                             this.returnedTodo = returnedTodo;
-                            console.log(JSON.parse(returnedTodo));
                         }.bind(this)
                     });
+                },
+                getList: function () {
+                    $.getJSON('/todos/get', function (todos) {
+                        this.todos = todos;
+                    console.log(todos);
+                    }.bind(this));
                 }
             }
         });
