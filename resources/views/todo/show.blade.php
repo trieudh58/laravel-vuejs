@@ -55,16 +55,17 @@
                 }.bind(this));
                 // Send ajax request to get data from server periodically 20 seconds
                 // Run
-                setInterval(() => {this.getList()}, 10000);
+                // setInterval(() => {this.getList()}, 10000);
+
+                // Tell setInterval() to call function named this.getList, not call this.getList() itself :)
+                setInterval(this.getList, 10000);
+
                 // Not run
-                setInterval(this.getList(), 20000);
+                // setInterval(this.getList(), 20000);
             },
             watch : {
                 returnedTodo: function (val) {
                    this.todos.unshift(JSON.parse(val));
-                },
-                todos: function (val) {
-                    console.log(val);
                 }
             },
             methods: {
@@ -92,7 +93,7 @@
                 getList: function () {
                     $.getJSON('/todos/get', function (todos) {
                         this.todos = todos;
-                    console.log(todos);
+                    // console.log(todos);
                     }.bind(this));
                 }
             }

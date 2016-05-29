@@ -12,7 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/todos');
+//    return view('welcome');
 });
 
 Route::get('/todos', 'TodoController@show');
